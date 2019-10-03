@@ -1,6 +1,6 @@
-#Philosophers Dinner Problem
+# Philosophers Dinner Problem
 
-![./img.gif]
+![./img.gif]()
 
 Jantar dos Filósofos Descrito no Livro Sistemas Operacionais Modernos - Tenenbaum Pág.115 A vida de um filósofo consiste em alternar 
 períodos de alimentação e pensamento. (Trata-se de um tipo de abstração, mesmo para filósofos, mas as outras atividades são 
