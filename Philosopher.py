@@ -1,36 +1,31 @@
-# Jantar dos Filósofos Descrito no Livro Sistemas Operacionais Modernos - Tenenbaum Pág.115 A vida de um filósofo consiste em alternar 
-# períodos de alimentação e pensamento. (Trata-se de um tipo de abstração, mesmo para filósofos, mas as outras atividades são 
-# irrelevantes aqui.) Quando um filósofo fica suficientemente faminto, ele tenta pegar seus garfos à esquerda e à direita, um de 
-# cada vez, não importa a ordem. Se for bem sucedido em pegar dois garfos, ele come por um tempo, então larga os garfos e continua 
-# a pensar. A ques- tão fundamental é: você consegue escrever um programa para cada filósofo que faça o que deve fazer e jamais 
-# fique travado?
-
+import threading
 state = []
+for i in range(5):
+    state.append(0)
 
 
-# s = []
-
-class Philosopher:
+class Philosopher(threading.Thread):
     def __init__(self, n, i):
+        threading.Thread.__init__(self)
         self.N = n
         self.i = i
         self.LEFT = (i + self.N - 1) % self.N
         self.RIGHT = (i + 1) % self.N
-        self.THINKING = 0
-        self.HUNGRY = 1
-        self.EATING = 2
+        self.THINKING = 1
+        self.HUNGRY = 2
+        self.EATING = 3
 
-        while 1:
+        while True:
             self.think(self.i)
             self.take_first(self.i)
             self.eat(self.i)
             self.put_forks(self.i)
 
     def think(self, i):
-        print("Pensador " + str(i) + " oo´°°°")
+        print("Pensador " + str(i) + " Pensando")
 
     def eat(self, i):
-        print("Pensador " + str(i) + " o_o")
+        print("Pensador " + str(i) + " Comendo")
 
     def take_first(self, i):
         # entra na regiao critica
@@ -50,3 +45,14 @@ class Philosopher:
         if state[i] == self.HUNGRY and state[self.LEFT] != self.EATING and state[self.RIGHT] != self.EATING:
             state[i] = self.EATING
             # sobe semáforo
+
+
+qtd_filosofos = 5
+filosofos = [threading.Lock() for n in range(qtd_filosofos)]
+
+Philosophers = []
+for i in range(qtd_filosofos):
+    Philosophers.append(Philosopher(qtd_filosofos, filosofos[i]))
+
+for p in Philosophers:
+    p.start()
