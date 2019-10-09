@@ -1,7 +1,14 @@
 import threading
-state = []
-for i in range(5):
+import time
+import random
+
+qtd_filosofos = 5
+state = []      # Lista para guardar o estado de cada filósofo
+
+for i in range(qtd_filosofos):
     state.append(0)
+
+mutex = threading.Semaphore(1)  # Criando um semáforo
 
 
 class Philosopher(threading.Thread):
@@ -11,48 +18,46 @@ class Philosopher(threading.Thread):
         self.i = i
         self.LEFT = (i + self.N - 1) % self.N
         self.RIGHT = (i + 1) % self.N
-        self.THINKING = 1
-        self.HUNGRY = 2
-        self.EATING = 3
+        self.THINKING = 0
+        self.HUNGRY = 1
+        self.EATING = 2
 
         while True:
-            self.think(self.i)
-            self.take_first(self.i)
-            self.eat(self.i)
-            self.put_forks(self.i)
+            self.think(self.i)                  # Pensando
+            time.sleep(random.randint(0, 2))
+            self.take_forks(self.i)             # Pegando os garfos
+            self.put_forks(self.i)              # Liberando os garfos
 
     def think(self, i):
-        print("Pensador " + str(i) + " Pensando")
+        print("Filósofo " + str(i) + " Pensando")
 
-    def eat(self, i):
-        print("Pensador " + str(i) + " Comendo")
-
-    def take_first(self, i):
-        # entra na regiao critica
+    def take_forks(self, i):
+        print("Filósofo " + str(i) + " Quer Comer")
+        mutex.acquire()             # entra na regiao critica
         state[i] = self.HUNGRY
-        self.test(i)
-        # sai da regiao critica
-        # bloqueia se não pegou garfo
+        self.eat(i)
+        mutex.release()             # sai da regiao critica
 
     def put_forks(self, i):
-        # entra na regiao critica
+        mutex.acquire()             # entra na regiao critica
         state[i] = self.THINKING
-        self.test(self.LEFT)
-        self.test(self.RIGHT)
-        # sai da regiao critica
+        self.eat(self.LEFT)
+        self.eat(self.RIGHT)
+        print("Filósofo " + str(i) + " Liberou os Garfos")
+        mutex.release()             # sai da regiao critica
 
-    def test(self, i):
-        if state[i] == self.HUNGRY and state[self.LEFT] != self.EATING and state[self.RIGHT] != self.EATING:
-            state[i] = self.EATING
-            # sobe semáforo
+    def eat(self, i):
+        if state[i] == self.HUNGRY:
+            if state[self.LEFT] != self.EATING:
+                if state[self.RIGHT] != self.EATING:
+                    state[i] = self.EATING
+                    time.sleep(random.randint(0,2))
+                    print("Filósofo " + str(i) + " Comendo")
 
-
-qtd_filosofos = 5
-filosofos = [threading.Lock() for n in range(qtd_filosofos)]
 
 Philosophers = []
 for i in range(qtd_filosofos):
-    Philosophers.append(Philosopher(qtd_filosofos, filosofos[i]))
+    Philosophers.append(threading.Thread(target=Philosopher, args=(qtd_filosofos, i))) #Criando as threads
 
 for p in Philosophers:
-    p.start()
+    p.start()           # Iniciando as Threads
