@@ -2,12 +2,6 @@ import threading
 import time
 import random
 
-qtd_filosofos = 5
-state = []      # Lista para guardar o estado de cada filósofo
-
-for i in range(qtd_filosofos):
-    state.append(0)
-
 mutex = threading.Semaphore(1)  # Criando um semáforo
 
 
@@ -55,9 +49,17 @@ class Philosopher(threading.Thread):
                     print("Filósofo " + str(i) + " Comendo")
 
 
-Philosophers = []
-for i in range(qtd_filosofos):
-    Philosophers.append(threading.Thread(target=Philosopher, args=(qtd_filosofos, i))) #Criando as threads
+if __name__ == '__main__':
 
-for p in Philosophers:
-    p.start()           # Iniciando as Threads
+    qtd_filosofos = 5
+    state = []  # Lista para guardar o estado de cada filósofo
+
+    for i in range(qtd_filosofos):
+        state.append(0)
+
+    Philosophers = []
+    for i in range(qtd_filosofos):
+        Philosophers.append(threading.Thread(target=Philosopher, args=(qtd_filosofos, i))) #Criando as threads
+
+    for p in Philosophers:
+        p.start()           # Iniciando as Threads
